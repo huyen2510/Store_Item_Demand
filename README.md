@@ -10,3 +10,20 @@ What's the best way to deal with seasonality? Should stores be modeled separatel
 This is a great competition to explore different models and improve your skills in forecasting.
 
 This is a Kaggle dataset which can be found in this link: https://www.kaggle.com/c/demand-forecasting-kernels-only/
+
+<p align="center">
+  <img src="https://github.com/panambY/Store_Item_Demand/blob/master/image/store_item_demand.jpg">
+</p>
+
+## Data Description
+
+### File descriptions <br>
+- train.csv - Training data
+- test.csv - Test data (Note: the Public/Private split is time based)
+- sample_submission.csv - a sample submission file in the correct format
+
+### Data fields <br>
+- date - Date of the sale data. There are no holiday effects or store closures.
+- store - Store ID
+- item - Item ID
+- sales - Number of items sold at a particular store on a particular date.

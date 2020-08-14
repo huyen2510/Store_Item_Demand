@@ -10,3 +10,7 @@ What's the best way to deal with seasonality? Should stores be modeled separatel
 This is a great competition to explore different models and improve your skills in forecasting.
 
 This is a Kaggle dataset which can be found in this link: https://www.kaggle.com/c/demand-forecasting-kernels-only/
+
+<p align="center">
+  <img src="https://github.com/panambY/Store_Item_Demand/blob/master/image/store_item_demand.jpg">
+</p>

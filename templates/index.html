@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Item Prediction</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<style>
+    html * {
+        font-family: 'Sofia Sans', sans-serif;
+    }
+
+    body {
+        max-width: 854px;
+        max-height: 616px;
+        margin: 0;
+    }
+
+    p {
+        margin: 0
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: absolute;
+        width: 854px;
+        /* height: 424px; */
+        top: 47%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #banner {
+        display: flex;
+        justify-content: space-between;
+        height: 222px;
+    }
+
+    #banner-name {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #banner-top-left-blob {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    #banner-bottom-right-blob {
+        display: flex;
+        align-items: flex-end;
+    }
+
+    #content {
+        display: flex;
+        justify-content: space-between;
+        height: auto;
+        padding-top: 60px;
+    }
+
+    #description {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 306px;
+        padding-right: 20px;
+    }
+
+    .description-text {
+        font-size: 18px;
+        line-height: 23px;
+        text-align: justify;
+    }
+
+    #description-rossmann {
+        font-weight: 400;
+        color: #005F37;
+    }
+
+    #description-application {
+        font-weight: 700;
+        color: #005F37;
+    }
+
+    #predictor {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 88%;
+    }
+
+    .predictor-flex {
+        display: flex;
+        justify-content: center;
+        padding-top: 5px;
+    }
+
+    .header {
+        position: absolute;
+        transform: translate(10px, -3px);
+        font-size: 12px;
+        font-weight: 400;
+        color: #005F37;
+        background-color: rgb(255, 255, 255);
+        background-position-x: 0%;
+        background-position-y: 0%;
+        background-repeat: repeat;
+        background-attachment: scroll;
+        background-image: none;
+        background-size: auto;
+        background-origin: padding-box;
+        background-clip: border-box;
+    }
+
+    .rounded-border {
+        border: 1px solid #292929;
+        border-radius: 5px;
+        width: auto;
+        margin: 5px 0 0 0;
+    }
+
+    .top-box {
+        height: 54px;
+    }
+
+    .middle-box {
+        height: 54px;
+    }
+
+    .bottom-box {
+        height: 198px;
+    }
+
+    .inp {
+        background-color: #ffffff;
+        position: absolute;
+        transform: translate(10px, 75%);
+        width: 11.5%;
+        border: none;
+    }
+
+    #store-selection-list {
+        height: 35px;
+        width: 12%;
+        transform: translate(10px, 50%);
+    }
+
+    #item-selection-list {
+        height: 35px;
+        width: 12%;
+        transform: translate(10px, 50%);
+    }
+
+    .datepicker {
+        transform: translate(5px, 50%);
+        width: 12%;
+        height: 35px;
+    }
+
+    #predict-button {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+        border: 2px solid #005F37;
+        background-color: #005F37;
+        border-radius: 5px;
+        width: 100%;
+        height: 100%;
+        margin: 0px 0 0 0;
+    }
+
+    .sales-indicator {
+        color: #005F37;
+        width: 27%;
+        height: fit-content;
+        font-size: x-large;
+    }
+
+    #curve-chart {
+        transform: translate(10px, 15px);
+        width: 500px;
+        height: 180px;
+    }
+
+    .top-row {
+        width: 116px;
+        padding-right: 5px;
+    }
+
+    .middle-row {
+        width: 256px;
+    }
+
+    .bottom-row {
+        width: 524px;
+    }
+
+    #footer-text {
+        display: flex;
+    }
+
+    #footer {
+        display: flex;
+        justify-content: space-between;
+        background-color: #005F37;
+        border-radius: 5px;
+        height: 16px;
+        padding: 12px;
+    }
+
+    #footer-description {
+        display: flex;
+        align-items: center;
+    }
+
+    .footer-text {
+        font-size: 16px;
+        width: 80px
+    }
+
+    #footer-text-created {
+        color: #ffaeae;
+        font-weight: 300;
+    }
+
+    #footer-text-name {
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    #footer-link {
+        display: flex;
+        justify-content: space-between;
+        width: 84px;
+    }
+
+    @media (max-width: 872px) {
+
+        .container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            width: auto;
+            height: auto;
+            top: 0;
+            left: 0;
+            transform: translate(0, 0);
+            margin: 5%;
+        }
+
+        #banner {
+            height: auto;
+            margin: 0 0 5% 0
+        }
+
+        #banner-img {
+            /* max-width: 100%;
+        min-width: 50%; */
+            height: auto;
+        }
+
+        #banner-name {
+            height: auto;
+            width: auto;
+        }
+
+        .banner-blob {
+            visibility: collapse;
+            height: 0px;
+            width: 0px;
+        }
+
+        #content {
+            flex-direction: column;
+            width: auto;
+        }
+
+        #description {
+            width: auto;
+            height: auto;
+        }
+
+        #description-application {
+            margin: 0 0 3% 0;
+        }
+
+        #predictor {
+            width: auto;
+            justify-content: center;
+        }
+
+        .predictor-flex {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .top-row {
+            width: auto;
+            flex-basis: 100%;
+            margin: 1% 0;
+        }
+
+        .middle-row {
+            width: auto;
+            flex-basis: 100%;
+            margin: 1% 0;
+        }
+
+        .rounded-border {
+            width: auto;
+        }
+
+        #predict-button {
+            height: 54px;
+            width: 100%;
+            margin: 2% 0;
+        }
+
+        #total-sales-indicator {
+            width: 240px;
+        }
+
+        #avg-sales-indicator {
+            width: 240px;
+        }
+
+        .inp {
+            width: 100px;
+        }
+
+        #footer {
+            margin: 3% 0;
+        }
+    }
+</style>
+
+<body>
+    <div class="container" id="main-container">
+        <div id="banner">
+            <!-- <div class="banner-blob" id="banner-top-left-blob">
+                <img src="{{ url_for('static', filename='images/banner/top_left_blob.png') }}" width="184" height="124" alt="Top-left Blob"/>
+            </div> -->
+            <div id="banner-name">
+                <img id="banner-img" src="{{ url_for('static', filename='images/banner/banner.jpg') }}" width="100%"
+                    alt="Rossmann Sales Prediction" />
+            </div>
+            <!-- <div class="banner-blob" id="banner-bottom-right-blob">
+                <img src="{{ url_for('static', filename='images/banner/bottom_right_blob.png') }}" width="184" height="124" alt="Bottom-right Blob"/>
+            </div> -->
+        </div>
+        <div id="content">
+            <div id="description">
+                <p class="description-text" id="description-application">
+                    Prediction Item Sales
+                <!-- <p class="description-text" style="color: #005F37;">Created By: Bui Khanh Huyen</p> -->
+                </p>
+            </div>
+            <div id="predictor" style="width: 88%; ">
+                <form method="post" action="/predict_api" class="predictor-flex">
+                    <div class="top-row" id="store-selector">
+                        <div class="header">Store</div>
+                        <select name="store-selector-form" class="inp" id="store-selection-list">
+                            <option value="1">1</option>
+                        </select>
+                        <div class="rounded-border top-box"></div>
+                    </div>
+                    <div class="top-row" id="from-date-selector">
+                        <div class="header">From</div>
+                        <input name="from-date-form" id="from-date-selector-input" type="date" required
+                            class="inp datepicker" min="2000-01-01" max="2099-12-31" onchange="ChangeToDateMinValue()">
+                        <div class="rounded-border top-box"></div>
+                    </div>
+                    <div class="top-row" id="to-date-selector">
+                        <div class="header">To</div>
+                        <input name="to-date-form" id="to-date-selector-input" type="date" required
+                            class="inp datepicker" min="2000-01-01" max="2099-12-31"
+                            onchange="ChangeFromDateMaxValue()">
+                        <div class="rounded-border top-box"></div>
+                    </div>
+                    <div class="top-row" id="store-selector">
+                        <div class="header">Item</div>
+                        <select name="item-selector-form" class="inp" id="item-selection-list">
+                            <option value="1">1</option>
+                        </select>
+                        <div class="rounded-border top-box"></div>
+                    </div>
+                    <div class="top-row" id="top-row-button">
+                        <button id="predict-button" type="submit" onmouseover="ChangeButtonColor()"
+                            onmouseout="RevertButtonColor()" onmousedown="RevertButtonColor()"
+                            onmouseup="ChangeButtonColor()">Predict</button>
+                    </div>
+                </form>
+                
+                <!-- <div class="bottom-row" id="visualization">
+                    <div class="header">Visualization</div>
+                    <div class="inp" id="curve-chart"></div>
+                    <div class="rounded-border bottom-box"></div>
+                </div> -->
+            </div>
+        </div>
+        <div style="    padding: 20px;
+        padding-left: 137px;">
+            <p class="description-text">
+            Kết quả dự báo StoreID:  {{storeid}} ItemID: {{item_id}} từ {{from_date}} đến {{to_date}}
+        <!-- <p class="description-text" style="color: #005F37;">Created By: Bui Khanh Huyen</p> -->
+            </p>
+        </div>
+        <div class="predictor-flex">
+            <div class="middle-row" id="total-sales-display">
+                <div class="header">Total Quantity Items</div>
+                <p class="inp sales-indicator" id="total-sales-indicator">{{total}}</p>
+                <div class="rounded-border middle-box"></div>
+            </div>
+            <!-- <div class="middle-row" id="average-sales-display">
+                <div class="header">Average Sales</div>
+                <p class="inp sales-indicator" id="avg-sales-indicator">{{average}}</p>
+                <div class="rounded-border middle-box"></div>
+            </div> -->
+        </div>
+        <div class="row" width="200" height="100">
+            <div class="col-md-6">
+                <canvas id="myChart" style="height:200px ;" ></canvas>
+                <script>
+                    const ctx = document.getElementById('myChart');
+                    new Chart(ctx, {
+                      type: 'bar',
+                      data: {
+                        labels: {{labels | safe}},
+                        datasets: [{
+                          label: 'Quantity Items',
+                          data: {{values | safe}},
+                          borderWidth: 1
+                        }]
+                      },
+                      options: {
+                        scales: {
+                          y: {
+                            beginAtZero: true
+                          }
+                        }
+                      }
+                    });
+                  </script>
+            </div>
+            <div class="col-md-6">
+                <canvas id="myChart_month" style="height:200px ;" ></canvas>
+                <script>
+                    const ctx2 = document.getElementById('myChart_month');
+                    new Chart(ctx2, {
+                      type: 'line',
+                      data: {
+                        labels: {{month_labels | safe}},
+                        datasets: [{
+                          label: 'Quantity Items',
+                          data: {{sales_per_month | safe}},
+                          borderWidth: 1
+                        }]
+                      },
+                      options: {
+                        scales: {
+                          y: {
+                            beginAtZero: true
+                          }
+                        }
+                      }
+                    });
+                  </script>
+            </div>
+        </div>
+
+        <!-- <div id="footer">
+            <div id="footer-description">
+                <p class="footer-text" id="footer-text-created">Created by</p>
+                <p class="footer-text" id="footer-text-name">Midhun R</p>
+            </div>
+            <div id="footer-icons">
+                <div id="footer-link">
+                    <a href="https://github.com/connect-midhunr">
+                        <img src="{{ url_for('static', filename='images/icons/github_icon.png') }}" width="16" height="16" alt="Github Link"/>
+                    </a>
+                    <a href="https://www.linkedin.com/in/connectmidhunr/">
+                        <img src="{{ url_for('static', filename='images/icons/linkedin_icon.png') }}" width="16" height="16" alt="LinkedIn Link"/>
+                    </a>
+                    <a href="https://medium.com/@connect.midhunr">
+                        <img src="{{ url_for('static', filename='images/icons/medium_icon.png') }}" width="28" height="16" alt="Medium Link"/>
+                    </a>
+                </div>
+            </div>
+        </div> -->
+    </div>
+</body>
+<!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
+<!-- <script type="text/javascript" src="../static/script/script.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    function AddStores() {
+        var list = document.getElementById("store-selection-list");
+        for (i = 2; i <= 10; i++) {
+            var option = document.createElement("option");
+            option.text = i;
+            option.value = i;
+            list.appendChild(option);
+        }
+    }
+
+    function AddItem() {
+        var list = document.getElementById("item-selection-list");
+        for (i = 2; i <= 50; i++) {
+            var option = document.createElement("option");
+            option.text = i;
+            option.value = i;
+            list.appendChild(option);
+        }
+    }
+
+    function SetDefaultDate() {
+        var date = new Date();
+        var current_date = date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
+
+        var collection = document.getElementsByClassName("datepicker");
+        for (let i = 0; i < collection.length; i++) {
+            collection[i].value = current_date;
+        }
+    }
+
+    function ToggleSalesIndicatorsVisibility(display) {
+        if (typeof (display) == typeof (true)) {
+            var sales_collection = document.getElementsByClassName("sales-indicator");
+            var do_display = display ? 'block' : 'none';
+
+            for (let i = 0; i < sales_collection.length; i++) {
+                sales_collection[i].style.display = do_display;
+            }
+        }
+        else {
+            console.log("The argument is not a boolean value. Datatype: ", typeof (display));
+        }
+    }
+
+    // function ToggleVisualizationVisibility(display)
+    // {
+    //     if (typeof(display) == typeof(true))
+    //     {
+    //         var visualization = document.getElementById("curve-chart");
+    //         var do_display = display ? 'block' : 'none';
+
+    //         visualization.style.display = do_display
+    //     }
+    //     else
+    //     {
+    //         console.log("The argument is not a boolean value. Datatype: ", typeof(display));
+    //     }
+    // }
+
+    function ToggleResultsVisibility(display) {
+        ToggleSalesIndicatorsVisibility(display)
+        // ToggleVisualizationVisibility(display)
+    }
+
+    function ChangeToDateMinValue() {
+        var from_date_element = document.getElementById("from-date-selector-input");
+        var to_date_element = document.getElementById("to-date-selector-input");
+
+        to_date_element.min = from_date_element.value;
+        if (from_date_element.value > to_date_element.value) {
+            to_date_element.value = to_date_element.min;
+        }
+
+        // ToggleResultsVisibility(false)
+    }
+
+    function ChangeFromDateMaxValue() {
+        var from_date_element = document.getElementById("from-date-selector-input");
+        var to_date_element = document.getElementById("to-date-selector-input");
+
+        from_date_element.max = to_date_element.value;
+        if (from_date_element.value > to_date_element.value) {
+            from_date_element.value = to_date_element.value
+        }
+
+        // ToggleResultsVisibility(false)
+    }
+
+    function ChangeButtonColor() {
+        document.getElementById('predict-button').style.backgroundColor = '#ffffff';
+        document.getElementById('predict-button').style.color = '#005F37';
+    }
+
+    function RevertButtonColor() {
+        document.getElementById('predict-button').style.backgroundColor = '#005F37';
+        document.getElementById('predict-button').style.color = '#ffffff';
+    }
+
+    // function DrawChart(data) 
+    // {
+    //     var data = google.visualization.arrayToDataTable(data);
+
+    //     var options = {
+    //         curveType: 'function',
+    //         legend: 'none',
+    //         series: {0: { color: '##005F37' }},
+    //         backgroundColor: {'fill': '#00FFFFFF'},
+    //         width: 500,
+    //         height: 180,
+    //         chartArea:{left:5, top:15, right: 5, bottom: 15, width:'100%', height: '100%'},
+    //         vAxis:{textPosition: 'in'}
+    //     };
+
+    //     var chart = new google.visualization.LineChart(document.getElementById('curve-chart'));
+    //     chart.draw(data, options);
+    // }
+
+    // function DisplaySales(data)
+    // {
+    //     var sumOfSales = 0
+
+    //     for (let i = 0; i < data.length; i++)
+    //     {
+    //         sumOfSales += Math.round(data[i][1])
+    //     }
+
+    //     console.log("Data: ", data);
+    //     console.log("Sum: ", sumOfSales.toLocaleString("en-US"))
+    //     console.log("Avg: ", Math.round(sumOfSales / data.length).toLocaleString("en-US"))
+
+    //     document.getElementById('total-sales-indicator').innerHTML = "$ " + Math.round(sumOfSales).toLocaleString("en-US")
+    //     document.getElementById('avg-sales-indicator').innerHTML = "$ " + Math.round(sumOfSales / data.length).toLocaleString("en-US")
+
+    //     data.unshift(['Date', 'Sales'])
+    //     console.log(data);
+    //     // DrawChart(data)
+    // }
+
+    // function SendValuesToApi()
+    // {
+    //     var store_id = document.getElementById("store-selection-list").value;
+    //     var from_date = document.getElementById("from-date-selector-input").value;
+    //     var to_date = document.getElementById("to-date-selector-input").value;
+
+    //     const data = {"data": 
+    //     {
+    //         "store": store_id,
+    //         "from_date": from_date,
+    //         "to_date": to_date
+    //     }}
+    //     api_url = 'http://127.0.0.1:5500/predict_api'
+
+    //     fetch(api_url, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(data)
+    //     })
+    //     .then(response => { if (response.ok) { return response.json(); } else { throw new Error('Something went wrong'); }})
+    //     .then(data => { DisplaySales(data); })
+    //     .catch(error => { console.error(error); });
+    // }
+
+    function PredictSales() {
+        document.getElementById('total-sales-indicator').innerHTML = "Calculating..."
+        document.getElementById('avg-sales-indicator').innerHTML = "Calculating..."
+
+        ToggleResultsVisibility(true);
+        // SendValuesToApi();
+    }
+
+    function SiteLoading() {
+        AddStores();
+        AddItem();
+        SetDefaultDate();
+        // ToggleResultsVisibility(false)
+    }
+
+    window.onload = SiteLoading();
+</script>
+
+</html>
